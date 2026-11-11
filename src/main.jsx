@@ -4,7 +4,7 @@ import { supabase, isSupabaseConfigured } from './lib/supabase';
 import './styles.css';
 
 const ROLES = ['Treinamento','Aprendiz','Analista','Especialista','Supervisor','Responsável','Responsável Geral'];
-const STATUSES = ['Ativo','Inativo','Suspenso','Afastado'];
+const STATUSES = ['Pendente','Ativo','Inativo','Suspenso','Afastado'];
 const ADMIN_ROLES = ['Supervisor','Responsável','Responsável Geral'];
 const today = () => new Date().toLocaleDateString('en-CA');
 const errText = (e) => e?.message || 'Ocorreu um erro inesperado.';
@@ -17,6 +17,14 @@ function App() {
   const [loginPassword, setLoginPassword] = useState('');
   const [loginError, setLoginError] = useState('');
   const [loginNotice, setLoginNotice] = useState('');
+  const [signupName, setSignupName] = useState('');
+  const [signupId, setSignupId] = useState('');
+  const [signupPassword, setSignupPassword] = useState('');
+  const [signupDiscord, setSignupDiscord] = useState('');
+  const [signupEmail, setSignupEmail] = useState('');
+  const [signupPhone, setSignupPhone] = useState('');
+  const [signupError, setSignupError] = useState('');
+  const [signupMessage, setSignupMessage] = useState('');
   const [authMode, setAuthMode] = useState('login');
   const [recoveryError, setRecoveryError] = useState('');
   const [recoveryMessage, setRecoveryMessage] = useState('');
@@ -54,7 +62,7 @@ function App() {
     setBusy(true);
     try {
       const results = await Promise.all([
-        supabase.from('staff_profiles').select('user_id,staff_id,name,discord,whatsapp,eqpg,role,status,email,created_at').order('name'),
+        supabase.from('staff_profiles').select('user_id,staff_id,name,discord,whatsapp,phone,eqpg,role,status,email,created_at').order('name'),
         supabase.from('events').select('*').order('event_date', { ascending: true }),
         supabase.from('team_goals').select('*').order('created_at', { ascending: false }),
         supabase.from('schedules').select('*').order('schedule_date', { ascending: true }),
@@ -108,6 +116,27 @@ function App() {
     } catch (e) { setLoginError(errText(e)); }
     finally { setLoading(false); }
   };
+  const requestSignup = async (e) => {
+    e.preventDefault();
+    setSignupError('');
+    setSignupMessage('');
+    if (signupPassword.length < 8) { setSignupError('A senha precisa ter pelo menos 8 caracteres.'); return; }
+    setLoading(true);
+    try {
+      const { data, error } = await supabase.auth.signUp({
+        email: signupEmail.trim(), password: signupPassword,
+        options: { data: { name: signupName.trim(), staff_id: signupId.trim(), discord: signupDiscord.trim(), phone: signupPhone.trim() } }
+      });
+      if (error) throw error;
+      if (data.session) await supabase.auth.signOut();
+      setSignupPassword('');
+      setLoginEmail(signupEmail.trim());
+      setAuthMode('login');
+      setLoginNotice('Solicitação enviada! Seu cadastro ficará Pendente até a administração aprovar e liberar seu acesso.');
+    } catch (e) { setSignupError(errText(e)); }
+    finally { setLoading(false); }
+  };
+
   const requestPasswordReset = async (e) => {
     e.preventDefault();
     setRecoveryError('');
@@ -189,7 +218,7 @@ function App() {
 
   const saveMember = async (form) => {
     if (!isAdmin) throw new Error('Somente administradores podem alterar perfis.');
-    const payload = { staff_id: form.staff_id.trim(), name: form.name.trim(), discord: form.discord || null, whatsapp: form.whatsapp || null, eqpg: form.eqpg || null, role: form.role, status: form.status };
+    const payload = { staff_id: form.staff_id.trim(), name: form.name.trim(), discord: form.discord || null, whatsapp: form.whatsapp || null, phone: form.phone || null, eqpg: form.eqpg || null, role: form.role, status: form.status };
     const { error } = await supabase.from('staff_profiles').update(payload).eq('user_id', form.user_id); if (error) throw error;
     await writeLog('Perfil de membro atualizado', payload.name, 'staff_profiles', form.user_id); setModal(null); await loadData(); notify('Perfil atualizado.');
   };
@@ -199,9 +228,10 @@ function App() {
 
   if (!isSupabaseConfigured) return <SetupError />;
   if (authMode === 'update-password') return <main className="login-wrap"><form className="login-card" onSubmit={updatePassword}><div className="crown">♛</div><p className="eyebrow">RECUPERAÇÃO DE ACESSO</p><h1>CRIAR NOVA <span>SENHA</span></h1><p className="muted">Defina uma nova senha para sua conta do LISBOA EVENTOS.</p><label>Nova senha<input type="password" autoComplete="new-password" value={newPassword} onChange={e=>setNewPassword(e.target.value)} minLength={8} required /></label><label>Confirmar nova senha<input type="password" autoComplete="new-password" value={confirmPassword} onChange={e=>setConfirmPassword(e.target.value)} minLength={8} required /></label>{recoveryError && <p className="error">{recoveryError}</p>}<button className="primary full" disabled={loading}>{loading ? 'Salvando…' : 'Salvar nova senha'}</button></form></main>;
+  if (authMode === 'signup') return <main className="login-wrap"><form className="login-card" onSubmit={requestSignup}><div className="crown">♛</div><p className="eyebrow">SOLICITAÇÃO DE ACESSO</p><h1>CADASTRAR-<span>SE</span></h1><p className="muted">Preencha seus dados. A administração analisará e aprovará seu acesso antes de liberar a entrada no sistema.</p><label>Nome<input type="text" autoComplete="name" value={signupName} onChange={e=>setSignupName(e.target.value)} required /></label><label>ID<input type="text" value={signupId} onChange={e=>setSignupId(e.target.value)} required /></label><label>Senha<input type="password" autoComplete="new-password" minLength={8} value={signupPassword} onChange={e=>setSignupPassword(e.target.value)} required /></label><label>Discord<input type="text" value={signupDiscord} onChange={e=>setSignupDiscord(e.target.value)} placeholder="Usuário ou ID do Discord" /></label><label>E-mail<input type="email" autoComplete="email" value={signupEmail} onChange={e=>setSignupEmail(e.target.value)} required /></label><label>Telefone<input type="tel" autoComplete="tel" value={signupPhone} onChange={e=>setSignupPhone(e.target.value)} required /></label>{signupError && <p className="error">{signupError}</p>}<button className="primary full" disabled={loading}>{loading ? 'Enviando…' : 'Enviar solicitação'}</button><button type="button" className="link-button full" onClick={()=>{setAuthMode('login');setSignupError('')}}>Voltar ao login</button><p className="tiny">O cadastro não libera acesso automaticamente. Seu cargo inicial será Treinamento e seu status ficará Pendente.</p></form></main>;
   if (authMode === 'forgot-password') return <main className="login-wrap"><form className="login-card" onSubmit={requestPasswordReset}><div className="crown">♛</div><p className="eyebrow">RECUPERAÇÃO DE ACESSO</p><h1>ESQUECI A <span>SENHA</span></h1><p className="muted">Informe o e-mail cadastrado na sua conta. Enviaremos um link para criar uma nova senha.</p><label>E-mail<input type="email" autoComplete="email" value={loginEmail} onChange={e=>setLoginEmail(e.target.value)} required /></label>{recoveryError && <p className="error">{recoveryError}</p>}{recoveryMessage && <p className="notice">{recoveryMessage}</p>}<button className="primary full" disabled={loading}>{loading ? 'Enviando…' : 'Enviar link de recuperação'}</button><button type="button" className="link-button full" onClick={()=>{setAuthMode('login');setRecoveryError('');setRecoveryMessage('')}}>Voltar ao login</button></form></main>;
   if (loading && !session) return <div className="center-screen"><div className="spinner"/><p>Conectando ao LISBOA EVENTOS…</p></div>;
-  if (!session || !profile) return <main className="login-wrap"><form className="login-card" onSubmit={signIn}><div className="crown">♛</div><p className="eyebrow">ACESSO RESTRITO</p><h1>LISBOA <span>EVENTOS</span></h1><p className="muted">Entre com o e-mail e a senha da sua conta autorizada.</p><label>E-mail<input type="email" autoComplete="username" value={loginEmail} onChange={e=>setLoginEmail(e.target.value)} required /></label><label>Senha<input type="password" autoComplete="current-password" value={loginPassword} onChange={e=>setLoginPassword(e.target.value)} required /></label>{loginError && <p className="error">{loginError}</p>}{loginNotice && <p className="notice">{loginNotice}</p>}<button className="primary full" disabled={loading}>{loading ? 'Entrando…' : 'Entrar'}</button><button type="button" className="link-button full" onClick={()=>{setAuthMode('forgot-password');setLoginError('');setRecoveryError('');setRecoveryMessage('')}}>Esqueci minha senha</button><p className="tiny">Cadastro público desativado. Solicite acesso à administração.</p></form></main>;
+  if (!session || !profile) return <main className="login-wrap"><form className="login-card" onSubmit={signIn}><div className="crown">♛</div><p className="eyebrow">ACESSO RESTRITO</p><h1>LISBOA <span>EVENTOS</span></h1><p className="muted">Entre com o e-mail e a senha da sua conta autorizada.</p><label>E-mail<input type="email" autoComplete="username" value={loginEmail} onChange={e=>setLoginEmail(e.target.value)} required /></label><label>Senha<input type="password" autoComplete="current-password" value={loginPassword} onChange={e=>setLoginPassword(e.target.value)} required /></label>{loginError && <p className="error">{loginError}</p>}{loginNotice && <p className="notice">{loginNotice}</p>}<button className="primary full" disabled={loading}>{loading ? 'Entrando…' : 'Entrar'}</button><button type="button" className="link-button full" onClick={()=>{setAuthMode('forgot-password');setLoginError('');setRecoveryError('');setRecoveryMessage('')}}>Esqueci minha senha</button><button type="button" className="link-button full" onClick={()=>{setAuthMode('signup');setSignupError('');setSignupMessage('')}}>Cadastrar-se</button><p className="tiny">O acesso só é liberado após aprovação da administração.</p></form></main>;
 
   const nav = ['Dashboard','Registrar Eventos','Cronograma','Ranking de Eventos','Metas','Escala do Dia','Membros', ...(isAdmin ? ['Painel ADM'] : [])];
   return <div className="app-shell"><aside className="sidebar"><div className="brand"><span>♛</span><div><b>LISBOA</b><small>EVENTOS</small></div></div><div className="side-label">MENU PRINCIPAL</div><nav>{nav.map(n=><button key={n} className={page===n?'nav-active':''} onClick={()=>{setPage(n);setSearch('')}}><span>{({'Dashboard':'◈','Registrar Eventos':'◆','Cronograma':'▦','Ranking de Eventos':'★','Metas':'◎','Escala do Dia':'◷','Membros':'♙','Painel ADM':'♜'})[n]}</span>{n}</button>)}</nav><div className="sidebar-bottom"><div className="avatar">{profile.name?.slice(0,1)?.toUpperCase()}</div><div className="user-meta"><b>{profile.name}</b><small>{profile.role}</small></div><button className="logout" title="Sair" onClick={signOut}>↪</button></div></aside>
@@ -239,7 +269,7 @@ function Modal({modal,close,members,session,saveEvent,saveGoal,saveSchedule,save
  {modal.type==='goal'&&<>{field('Título','title','text',true)}{field('Quantidade alvo','target_quantity','number',true)}{field('Início do período','period_start','date')}{field('Fim do período','period_end','date')}{select('Responsável','responsible_id',['',...members.map(m=>m.user_id)])}{area('Descrição','description')}</>}
  {modal.type==='schedule'&&<>{field('Atividade','title','text',true)}{field('Data','schedule_date','date',true)}{field('Início','start_time','time')}{field('Fim','end_time','time')}{select('Responsável','responsible_id',['',...members.map(m=>m.user_id)])}{area('Observações','notes')}</>}
  {modal.type==='availability'&&<>{field('Data','available_date','date',true)}{field('Início','start_time','time')}{field('Fim','end_time','time')}{area('Observações','notes')}</>}
- {modal.type==='member'&&<>{field('ID do membro','staff_id','text',true)}{field('Nome','name','text',true)}{field('Discord','discord')}{field('WhatsApp','whatsapp','tel')}{field('EQPG','eqpg')}{select('Cargo','role',ROLES)}{select('Status','status',STATUSES)}<p className="wide notice">O e-mail de login é gerenciado pelo Supabase Auth e não pode ser alterado por este formulário.</p></>}
+ {modal.type==='member'&&<>{field('ID do membro','staff_id','text',true)}{field('Nome','name','text',true)}{field('Discord','discord')}{field('WhatsApp','whatsapp','tel')}{field('Telefone','phone','tel')}{field('EQPG','eqpg')}{select('Cargo','role',ROLES)}{select('Status','status',STATUSES)}<p className="wide notice">O e-mail de login é gerenciado pelo Supabase Auth e não pode ser alterado por este formulário.</p></>}
  </div><div className="modal-footer"><button type="button" className="secondary" onClick={close}>Cancelar</button><button className="primary" disabled={saving}>{saving?'Salvando…':'Salvar no banco'}</button></div></form></div>
 }
 function SetupError(){return <main className="center-screen"><div className="panel setup-card"><h1>Configuração necessária</h1><p>O site ainda não recebeu as variáveis de ambiente do Supabase.</p><p>Configure <code>VITE_SUPABASE_URL</code> e <code>VITE_SUPABASE_PUBLISHABLE_KEY</code> no ambiente de publicação e gere o build novamente.</p></div></main>}
