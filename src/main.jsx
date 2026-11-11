@@ -238,7 +238,7 @@ function App() {
   const weekStart=new Date();weekStart.setDate(weekStart.getDate()-((weekStart.getDay()+6)%7));weekStart.setHours(0,0,0,0);const weekEnd=new Date(weekStart);weekEnd.setDate(weekEnd.getDate()+7);
   const weeklyEvents=events.filter(e=>e.status==='Concluído'&&e.event_date&&new Date(e.event_date+'T00:00:00')>=weekStart&&new Date(e.event_date+'T00:00:00')<weekEnd);
   const memberEventCount=id=>events.filter(e=>e.status==='Concluído'&&((e.staff_ids||[]).includes(id)||e.responsible_id===id)).length;
-  const currentAvatar=profile.avatar_url?supabase.storage.from('lisboa-media').getPublicUrl(profile.avatar_url).data.publicUrl:null;
+  const currentAvatar=profile?.avatar_url?supabase.storage.from('lisboa-media').getPublicUrl(profile.avatar_url).data.publicUrl:null;
 
   if (!isSupabaseConfigured) return <SetupError />;
   if (authMode === 'update-password') return <main className="login-wrap"><form className="login-card" onSubmit={updatePassword}><div className="crown">♛</div><p className="eyebrow">RECUPERAÇÃO DE ACESSO</p><h1>CRIAR NOVA <span>SENHA</span></h1><p className="muted">Defina uma nova senha para sua conta do LISBOA EVENTOS.</p><label>Nova senha<input type="password" autoComplete="new-password" value={newPassword} onChange={e=>setNewPassword(e.target.value)} minLength={8} required /></label><label>Confirmar nova senha<input type="password" autoComplete="new-password" value={confirmPassword} onChange={e=>setConfirmPassword(e.target.value)} minLength={8} required /></label>{recoveryError && <p className="error">{recoveryError}</p>}<button className="primary full" disabled={loading}>{loading ? 'Salvando…' : 'Salvar nova senha'}</button></form></main>;
