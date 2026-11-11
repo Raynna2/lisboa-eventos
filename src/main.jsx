@@ -16,6 +16,12 @@ function App() {
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
   const [loginError, setLoginError] = useState('');
+  const [loginNotice, setLoginNotice] = useState('');
+  const [authMode, setAuthMode] = useState('login');
+  const [recoveryError, setRecoveryError] = useState('');
+  const [recoveryMessage, setRecoveryMessage] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [page, setPage] = useState('Dashboard');
   const [toast, setToast] = useState('');
   const [busy, setBusy] = useState(false);
@@ -71,8 +77,13 @@ function App() {
       setSession(data.session);
       if (data.session?.user) await loadProfile(data.session.user);
     }).catch(e => { if (mounted) setLoginError(errText(e)); }).finally(() => { if (mounted) setLoading(false); });
-    const { data: listener } = supabase.auth.onAuthStateChange((_event, nextSession) => {
+    const { data: listener } = supabase.auth.onAuthStateChange((event, nextSession) => {
       setSession(nextSession);
+      if (event === 'PASSWORD_RECOVERY') {
+        setAuthMode('update-password');
+        setRecoveryError('');
+        setRecoveryMessage('');
+      }
       if (!nextSession) setProfile(null);
     });
     return () => { mounted = false; listener.subscription.unsubscribe(); };
@@ -97,7 +108,55 @@ function App() {
     } catch (e) { setLoginError(errText(e)); }
     finally { setLoading(false); }
   };
-  const signOut = async () => { await supabase.auth.signOut(); setSession(null); setProfile(null); setPage('Dashboard'); };
+  const requestPasswordReset = async (e) => {
+    e.preventDefault();
+    setRecoveryError('');
+    setRecoveryMessage('');
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.resetPasswordForEmail(loginEmail.trim(), {
+        redirectTo: 'https://lisboaeventos.netlify.app/'
+      });
+      if (error) throw error;
+      setRecoveryMessage('Se existir uma conta com esse e-mail, você receberá uma mensagem com o link para criar uma nova senha. Verifique também a caixa de spam.');
+    } catch (e) {
+      setRecoveryError(errText(e));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const updatePassword = async (e) => {
+    e.preventDefault();
+    setRecoveryError('');
+    if (newPassword.length < 8) {
+      setRecoveryError('A nova senha precisa ter pelo menos 8 caracteres.');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setRecoveryError('As senhas não coincidem.');
+      return;
+    }
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) throw error;
+      await supabase.auth.signOut();
+      setSession(null);
+      setProfile(null);
+      setNewPassword('');
+      setConfirmPassword('');
+      setLoginPassword('');
+      setAuthMode('login');
+      setLoginNotice('Senha alterada com sucesso. Entre usando sua nova senha.');
+    } catch (e) {
+      setRecoveryError(errText(e));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const signOut = async () => { await supabase.auth.signOut(); setSession(null); setProfile(null); setPage('Dashboard'); setAuthMode('login'); };
 
   const saveEvent = async (form) => {
     const payload = { name: form.name.trim(), description: form.description || null, category: form.category || 'Normal', event_date: form.event_date || null, start_time: form.start_time || null, end_time: form.end_time || null, status: form.status || 'Agendado', notes: form.notes || null, responsible_id: form.responsible_id || null, created_by: session.user.id, participants: form.participants || [] };
@@ -139,8 +198,10 @@ function App() {
   const filteredEvents = useMemo(() => events.filter(e => `${e.name} ${e.category || ''} ${e.status || ''}`.toLowerCase().includes(search.toLowerCase())), [events, search]);
 
   if (!isSupabaseConfigured) return <SetupError />;
+  if (authMode === 'update-password') return <main className="login-wrap"><form className="login-card" onSubmit={updatePassword}><div className="crown">♛</div><p className="eyebrow">RECUPERAÇÃO DE ACESSO</p><h1>CRIAR NOVA <span>SENHA</span></h1><p className="muted">Defina uma nova senha para sua conta do LISBOA EVENTOS.</p><label>Nova senha<input type="password" autoComplete="new-password" value={newPassword} onChange={e=>setNewPassword(e.target.value)} minLength={8} required /></label><label>Confirmar nova senha<input type="password" autoComplete="new-password" value={confirmPassword} onChange={e=>setConfirmPassword(e.target.value)} minLength={8} required /></label>{recoveryError && <p className="error">{recoveryError}</p>}<button className="primary full" disabled={loading}>{loading ? 'Salvando…' : 'Salvar nova senha'}</button></form></main>;
+  if (authMode === 'forgot-password') return <main className="login-wrap"><form className="login-card" onSubmit={requestPasswordReset}><div className="crown">♛</div><p className="eyebrow">RECUPERAÇÃO DE ACESSO</p><h1>ESQUECI A <span>SENHA</span></h1><p className="muted">Informe o e-mail cadastrado na sua conta. Enviaremos um link para criar uma nova senha.</p><label>E-mail<input type="email" autoComplete="email" value={loginEmail} onChange={e=>setLoginEmail(e.target.value)} required /></label>{recoveryError && <p className="error">{recoveryError}</p>}{recoveryMessage && <p className="notice">{recoveryMessage}</p>}<button className="primary full" disabled={loading}>{loading ? 'Enviando…' : 'Enviar link de recuperação'}</button><button type="button" className="link-button full" onClick={()=>{setAuthMode('login');setRecoveryError('');setRecoveryMessage('')}}>Voltar ao login</button></form></main>;
   if (loading && !session) return <div className="center-screen"><div className="spinner"/><p>Conectando ao LISBOA EVENTOS…</p></div>;
-  if (!session || !profile) return <main className="login-wrap"><form className="login-card" onSubmit={signIn}><div className="crown">♛</div><p className="eyebrow">ACESSO RESTRITO</p><h1>LISBOA <span>EVENTOS</span></h1><p className="muted">Entre com o e-mail e a senha da sua conta autorizada.</p><label>E-mail<input type="email" autoComplete="username" value={loginEmail} onChange={e=>setLoginEmail(e.target.value)} required /></label><label>Senha<input type="password" autoComplete="current-password" value={loginPassword} onChange={e=>setLoginPassword(e.target.value)} required /></label>{loginError && <p className="error">{loginError}</p>}<button className="primary full" disabled={loading}>{loading ? 'Entrando…' : 'Entrar'}</button><p className="tiny">Cadastro público desativado. Solicite acesso à administração.</p></form></main>;
+  if (!session || !profile) return <main className="login-wrap"><form className="login-card" onSubmit={signIn}><div className="crown">♛</div><p className="eyebrow">ACESSO RESTRITO</p><h1>LISBOA <span>EVENTOS</span></h1><p className="muted">Entre com o e-mail e a senha da sua conta autorizada.</p><label>E-mail<input type="email" autoComplete="username" value={loginEmail} onChange={e=>setLoginEmail(e.target.value)} required /></label><label>Senha<input type="password" autoComplete="current-password" value={loginPassword} onChange={e=>setLoginPassword(e.target.value)} required /></label>{loginError && <p className="error">{loginError}</p>}{loginNotice && <p className="notice">{loginNotice}</p>}<button className="primary full" disabled={loading}>{loading ? 'Entrando…' : 'Entrar'}</button><button type="button" className="link-button full" onClick={()=>{setAuthMode('forgot-password');setLoginError('');setRecoveryError('');setRecoveryMessage('')}}>Esqueci minha senha</button><p className="tiny">Cadastro público desativado. Solicite acesso à administração.</p></form></main>;
 
   const nav = ['Dashboard','Registrar Eventos','Cronograma','Ranking de Eventos','Metas','Escala do Dia','Membros', ...(isAdmin ? ['Painel ADM'] : [])];
   return <div className="app-shell"><aside className="sidebar"><div className="brand"><span>♛</span><div><b>LISBOA</b><small>EVENTOS</small></div></div><div className="side-label">MENU PRINCIPAL</div><nav>{nav.map(n=><button key={n} className={page===n?'nav-active':''} onClick={()=>{setPage(n);setSearch('')}}><span>{({'Dashboard':'◈','Registrar Eventos':'◆','Cronograma':'▦','Ranking de Eventos':'★','Metas':'◎','Escala do Dia':'◷','Membros':'♙','Painel ADM':'♜'})[n]}</span>{n}</button>)}</nav><div className="sidebar-bottom"><div className="avatar">{profile.name?.slice(0,1)?.toUpperCase()}</div><div className="user-meta"><b>{profile.name}</b><small>{profile.role}</small></div><button className="logout" title="Sair" onClick={signOut}>↪</button></div></aside>
