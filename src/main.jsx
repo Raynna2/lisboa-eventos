@@ -76,9 +76,9 @@ function App() {
         supabase.from('availability').select('*').order('available_date', { ascending: true }),
         supabase.from('activity_logs').select('*').order('created_at', { ascending: false }).limit(100)
       ]);
-      const [m,e,g,s,a,l,sr] = results;
+      const [m,e,g,s,sr,a,l] = results;
       for (const r of results) if (r.error) throw r.error;
-      setMembers(m.data || []); setEvents(e.data || []); setGoals(g.data || []); setSchedules(s.data || []); setAvailability(a.data || []); setLogs(l.data || []); setScheduleResponses(sr.data || []);
+      setMembers(m.data || []); setEvents(e.data || []); setGoals(g.data || []); setSchedules(s.data || []); setScheduleResponses(sr.data || []); setAvailability(a.data || []); setLogs(l.data || []);
     } catch (e) { notify(`Não foi possível carregar os dados: ${errText(e)}`); }
     finally { setBusy(false); }
   }, [session, profile]);
