@@ -197,12 +197,16 @@ function App() {
   const uploadMedia = async (file, folder) => { if (!file) return null; if (!['image/jpeg','image/png','image/webp'].includes(file.type)) throw new Error('Envie JPG, PNG ou WEBP.'); if(file.size>5*1024*1024) throw new Error('Imagem deve ter até 5 MB.'); const ext=file.name.split('.').pop().toLowerCase(); const path=`${session.user.id}/${folder}-${Date.now()}.${ext}`; const {error}=await supabase.storage.from('lisboa-media').upload(path,file,{upsert:true,contentType:file.type}); if(error) throw error; return path; };
   const saveEvent = async (form) => {
     if (!canRegister) throw new Error('Seu cargo não pode registrar eventos.');
-    const chosen=form.staff_ids||[]; const senior=chosen.filter(id=>members.find(m=>m.user_id===id)?.role!=='Treinamento'); if(senior.length>4) throw new Error('Máximo de 4 staffs com cargo de Aprendiz ou superior.');
+    if (form.assigned_member_id && profile.role !== 'Responsável Geral') throw new Error('Somente o Responsável Geral pode lançar eventos na conta de outro membro.');
+    const chosen=[...new Set([...(form.staff_ids||[]),...(form.assigned_member_id?[form.assigned_member_id]:[])])];
+    const senior=chosen.filter(id=>members.find(m=>m.user_id===id)?.role!=='Treinamento');
+    if(senior.length>4) throw new Error('Máximo de 4 staffs com cargo de Aprendiz ou superior.');
     const event_image_path=form.event_image_file?await uploadMedia(form.event_image_file,'event'):null;
     const winner_image_path=form.winner_image_file?await uploadMedia(form.winner_image_file,'winner'):null;
     const payload={name:form.name.trim(),event_date:form.event_date,start_time:form.start_time||null,end_time:null,status:'Concluído',category:'Normal',notes:null,description:null,responsible_id:null,created_by:session.user.id,participants:[],staff_ids:chosen,winners:(form.winner_id||'').split(',').map(v=>v.trim()).filter(Boolean).map((staff_id,i)=>({staff_id,discord:(form.winner_discord||'').split(',').map(v=>v.trim())[i]||''})),event_image_path,winner_image_path};
     const {error}=await supabase.from('events').insert(payload); if(error) throw error;
-    await writeLog('Evento registrado',payload.name,'events'); setModal(null); await loadData(); notify('Evento registrado com sucesso.');
+    await writeLog(form.assigned_member_id?'Evento adicionado à conta de membro':'Evento registrado',form.assigned_member_name||payload.name,'events');
+    setModal(null); await loadData(); notify('Evento registrado com sucesso.');
   };
   const deleteEvent = async (row) => { if (!confirm(`Excluir o evento “${row.name}”?`)) return; const { error } = await supabase.from('events').delete().eq('id', row.id); if (error) return notify(errText(error)); await writeLog('Evento excluído', row.name, 'events', row.id); await loadData(); notify('Evento excluído.'); };
 
