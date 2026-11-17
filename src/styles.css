@@ -216,3 +216,7 @@ body::before{
 .agenda-public-entry b{color:#1d4f86}.agenda-public-entry span,.agenda-public-entry p{font-size:13px;color:#526984;margin:0}
 @media(max-width:850px){.daily-schedule-grid{grid-template-columns:1fr}.podium-grid{gap:7px}.podium-card{padding:12px 6px}.agenda-editor{grid-template-columns:1fr}.agenda-editor label:nth-child(3){grid-column:auto}}
 @media(max-width:560px){.today-event{grid-template-columns:minmax(0,1fr) 72px 48px;gap:7px}.today-event span,.today-event strong{font-size:11px}.podium-card b{font-size:12px}.podium-card strong{font-size:11px}.log-category-tabs{gap:5px}.log-category-tabs .rank-tab{padding:8px 10px;font-size:12px}}
+
+.attendance-control label{display:flex;align-items:center;gap:7px;color:#3c5673;font-size:13px}
+.attendance-control input[type=radio]{accent-color:#2876d8}
+.attendance-control textarea{width:100%;min-width:140px;resize:vertical}
