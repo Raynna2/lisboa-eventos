@@ -169,3 +169,5 @@ body::before{
  .agenda-slot{grid-template-columns:52px minmax(0,1fr); }
  .agenda-slot input:last-child{grid-column:2}
 }
+
+.login-wrap,.center-screen{position:relative;z-index:1;background:transparent !important}
