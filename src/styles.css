@@ -220,3 +220,31 @@ body::before{
 .attendance-control label{display:flex;align-items:center;gap:7px;color:#3c5673;font-size:13px}
 .attendance-control input[type=radio]{accent-color:#2876d8}
 .attendance-control textarea{width:100%;min-width:140px;resize:vertical}
+
+
+/* Template oficial do cronograma Lisboa */
+.daily-schedule-panel{position:relative;width:100%;aspect-ratio:16/9;min-height:0;overflow:hidden;border:0;border-radius:0;padding:0;background-image:url("data:image/jpeg;base64,data:image/jpeg;base64,<BASE64>");background-size:100% 100%;background-position:center;background-repeat:no-repeat;box-shadow:none}
+.schedule-template-head{position:absolute;inset:1.5% 2% auto;display:flex;justify-content:flex-end;align-items:center;z-index:5;pointer-events:none}
+.schedule-template-head>div{display:none}
+.schedule-add-button{pointer-events:auto;border:1px solid #c46aff;border-radius:999px;padding:8px 16px;background:linear-gradient(100deg,#8100e9,#b800ff);color:#fff;font-weight:900;font-size:clamp(9px,1vw,14px);box-shadow:0 0 16px #a000ff88;cursor:pointer}
+.daily-schedule-grid{position:absolute;left:3.2%;right:3.2%;top:29.5%;height:50%;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:1.8%;margin:0}
+.daily-category{position:relative;min-width:0;min-height:0;padding:12% 5% 7%;border:0;border-radius:0;background:transparent;overflow:hidden;display:flex;flex-direction:column}
+.daily-category h3{position:absolute;top:0;left:0;width:100%;height:17%;margin:0;display:flex;align-items:center;justify-content:center;color:transparent;font-size:0}
+.daily-category-content{height:100%;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;gap:5px;padding:0 2px 8px;scrollbar-width:thin;scrollbar-color:#9b39ef #151018}
+.daily-schedule-item{display:grid;grid-template-columns:auto minmax(0,1fr);gap:5px 8px;align-items:center;padding:6px 8px;border:1px solid #ffffff24;border-radius:6px;background:#080808d9;color:#fff;min-width:0}
+.daily-schedule-item>span{color:#f2c8ff;font-size:clamp(9px,1vw,15px);font-weight:900}
+.daily-schedule-item>b{color:#fff;font-size:clamp(9px,1vw,15px);overflow-wrap:anywhere}
+.daily-schedule-item .row-actions{grid-column:1/-1;display:flex;justify-content:flex-end;gap:5px}
+.daily-schedule-item .small-button{font-size:10px;padding:4px 8px}
+.daily-category.cat-1 .daily-schedule-item>span{color:#ffc16b}
+.daily-category.cat-2 .daily-schedule-item>span{color:#8dff79}
+.schedule-empty{margin:auto;text-align:center;color:#ffffff90;font-size:clamp(9px,1vw,14px);text-shadow:0 1px 4px #000}
+.schedule-star{display:none}
+.schedule-footer-bars{position:absolute;left:5.8%;right:5.8%;bottom:5%;height:12%;display:grid;grid-template-columns:1fr 1fr;gap:6%;pointer-events:none}
+.schedule-footer-bars>div{display:flex;align-items:center;gap:12px;padding:0 5%;color:#fff;min-width:0}
+.schedule-footer-bars span{font-size:clamp(16px,2.4vw,36px);color:#d77aff}
+.schedule-footer-bars b{font-size:clamp(8px,.85vw,13px);letter-spacing:.08em;text-shadow:0 1px 4px #000}
+.schedule-footer-bars i{margin-left:auto;font-size:clamp(14px,2vw,28px);color:#bd54f3}
+.schedule-footer-bars>div+div span,.schedule-footer-bars>div+div i{color:#ff9b20}
+@media(max-width:650px){.daily-schedule-panel{min-height:0}.schedule-add-button{padding:5px 9px;font-size:8px}.daily-schedule-item{padding:3px;gap:3px}.daily-schedule-item .small-button{font-size:8px;padding:3px 5px}.daily-category-content{gap:3px}.schedule-footer-bars{gap:4%}.schedule-footer-bars>div{gap:4px;padding:0 2%}}
+@media(max-width:430px){.daily-schedule-item{grid-template-columns:1fr}.daily-schedule-item .row-actions{gap:2px}.daily-schedule-item .small-button{font-size:7px;padding:2px 3px}.schedule-footer-bars b{font-size:6px}}
