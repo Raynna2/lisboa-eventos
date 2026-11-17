@@ -248,3 +248,5 @@ body::before{
 .schedule-footer-bars>div+div span,.schedule-footer-bars>div+div i{color:#ff9b20}
 @media(max-width:650px){.daily-schedule-panel{min-height:0}.schedule-add-button{padding:5px 9px;font-size:8px}.daily-schedule-item{padding:3px;gap:3px}.daily-schedule-item .small-button{font-size:8px;padding:3px 5px}.daily-category-content{gap:3px}.schedule-footer-bars{gap:4%}.schedule-footer-bars>div{gap:4px;padding:0 2%}}
 @media(max-width:430px){.daily-schedule-item{grid-template-columns:1fr}.daily-schedule-item .row-actions{gap:2px}.daily-schedule-item .small-button{font-size:7px;padding:2px 3px}.schedule-footer-bars b{font-size:6px}}
+
+.daily-schedule-panel .schedule-template-head{inset:25% 3.5% auto;justify-content:flex-end;transform:translateY(-100%)}
