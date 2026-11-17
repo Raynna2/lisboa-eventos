@@ -88,8 +88,8 @@ body{
  white-space:pre-wrap;overflow-wrap:anywhere;word-break:normal;
 }
 .table-wrap td .winner-announcement .small-button{width:100%;white-space:normal}
-.table-wrap td{max-width:1px}
-.table-wrap th:nth-child(5),.table-wrap td:nth-child(5){min-width:280px}
+.table-wrap table{table-layout:auto}
+.table-wrap th:nth-child(5),.table-wrap td:nth-child(5){min-width:280px;width:300px}
 .table-wrap th:nth-child(6),.table-wrap td:nth-child(6){min-width:130px}
 .log-category-picker{
  display:flex;align-items:center;gap:12px;flex-wrap:wrap;
