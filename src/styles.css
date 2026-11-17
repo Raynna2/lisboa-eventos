@@ -52,3 +52,7 @@ button.icon-close{background:#2675d8;color:#fff;border:1px solid #1c62b8;border-
 .winner-image-cell{display:grid;gap:7px;justify-items:start;min-width:110px}
 .winner-preview{display:block;width:100px;height:76px;object-fit:cover;border-radius:7px;border:1px solid #c6dcf8}
 @media(max-width:700px){.goal-card{padding:18px}.winner-preview{width:84px;height:68px}.section-logs{padding:12px}}
+
+
+.winner-announcement{background:#edf5ff;border:1px solid #c6dcf8;border-radius:8px;padding:9px}
+.winner-announcement code{font-family:inherit;font-weight:700}
