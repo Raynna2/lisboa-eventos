@@ -223,7 +223,7 @@ body::before{
 
 
 /* Template oficial do cronograma Lisboa */
-.daily-schedule-panel{position:relative;width:100%;aspect-ratio:16/9;min-height:0;overflow:hidden;border:0;border-radius:0;padding:0;background-image:url("data:image/jpeg;base64,data:image/jpeg;base64,<BASE64>");background-size:100% 100%;background-position:center;background-repeat:no-repeat;box-shadow:none}
+.daily-schedule-panel{position:relative;width:100%;aspect-ratio:16/9;min-height:0;overflow:hidden;border:0;border-radius:0;padding:0;background-image:url("/cronograma-template.webp");background-size:100% 100%;background-position:center;background-repeat:no-repeat;box-shadow:none}
 .schedule-template-head{position:absolute;inset:1.5% 2% auto;display:flex;justify-content:flex-end;align-items:center;z-index:5;pointer-events:none}
 .schedule-template-head>div{display:none}
 .schedule-add-button{pointer-events:auto;border:1px solid #c46aff;border-radius:999px;padding:8px 16px;background:linear-gradient(100deg,#8100e9,#b800ff);color:#fff;font-weight:900;font-size:clamp(9px,1vw,14px);box-shadow:0 0 16px #a000ff88;cursor:pointer}
@@ -265,3 +265,11 @@ body::before{
 .cronograma-posted-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:18px 0 12px;color:#1d3553}
 .cronograma-generated-image{display:block;width:100%;height:auto;object-fit:contain;border:1px solid #dce6f2;border-radius:10px;background:#080808}
 @media(max-width:760px){.cronograma-form{grid-template-columns:1fr 1fr}.cronograma-form label:first-child{grid-column:1/-1}.cronograma-form button{grid-column:1/-1}.cronograma-draft-list>div{grid-template-columns:minmax(0,1fr) auto}.cronograma-draft-list span{grid-column:1}.cronograma-draft-list button{grid-column:2;grid-row:1/3}.cronograma-posted-head{align-items:flex-start;flex-direction:column}}
+
+/* Ajustes de legibilidade e estados da agenda */
+.agenda-status-control{display:flex;align-items:center;gap:8px;color:#405b79;font-size:12px;font-weight:700}
+.agenda-status-control select{padding:7px 9px;border:1px solid #d1e0f1;border-radius:7px;background:#fff;color:#23466e}
+.cronograma-manager .cronograma-generated-image{max-width:100%;height:auto;object-fit:contain}
+.app-shell:before{background-size:contain;background-position:center center;background-repeat:no-repeat;opacity:.20}
+.sidebar,.panel,.stat,.login-card,.modal-card{background-color:rgba(255,255,255,.92)!important;backdrop-filter:blur(5px)}
+@media(max-width:760px){.app-shell:before{background-size:contain;opacity:.14}}
