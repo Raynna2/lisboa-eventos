@@ -273,3 +273,12 @@ body::before{
 .app-shell:before{background-size:contain;background-position:center center;background-repeat:no-repeat;opacity:.20}
 .sidebar,.panel,.stat,.login-card,.modal-card{background-color:rgba(255,255,255,.92)!important;backdrop-filter:blur(5px)}
 @media(max-width:760px){.app-shell:before{background-size:contain;opacity:.14}}
+
+
+/* Fundo oficial LISBOA EVENTOS: imagem inteira, sem recorte, com conteúdo legível */
+html,body{min-height:100%;background-color:#06122c}
+body{background-image:linear-gradient(180deg,rgba(3,12,32,.30),rgba(3,12,32,.42)),url('/lisboa-background.png')!important;background-repeat:no-repeat!important;background-position:center center!important;background-size:contain!important;background-attachment:fixed!important}
+.app-shell{background:transparent!important}
+.main-area{background:transparent!important}
+.panel,.stat,.goal-card,.modal-card,.login-card{background:rgba(255,255,255,.94)!important;backdrop-filter:blur(3px)}
+.sidebar{background:rgba(255,255,255,.97)!important}
