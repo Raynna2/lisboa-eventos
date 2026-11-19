@@ -416,3 +416,88 @@ body::after{
 @media(prefers-reduced-motion:reduce){
   body::after{animation:none;inset:0;opacity:.28}
 }
+
+
+/* Tema especial de Natal — LISBOA EVENTOS */
+:root{
+  --christmas-red:#b42336;
+  --christmas-green:#176b45;
+  --christmas-gold:#d6a63b;
+}
+.app-shell{position:relative}
+.app-shell::before{
+  content:"";
+  position:fixed;
+  z-index:9998;
+  pointer-events:none;
+  top:0;left:0;right:0;height:13px;
+  background:
+    radial-gradient(circle at 3% 7px,#f6d56d 0 3px,transparent 4px),
+    radial-gradient(circle at 9% 7px,#e75b65 0 3px,transparent 4px),
+    radial-gradient(circle at 15% 7px,#62b98a 0 3px,transparent 4px),
+    radial-gradient(circle at 21% 7px,#f6d56d 0 3px,transparent 4px),
+    radial-gradient(circle at 27% 7px,#e75b65 0 3px,transparent 4px),
+    radial-gradient(circle at 33% 7px,#62b98a 0 3px,transparent 4px),
+    radial-gradient(circle at 39% 7px,#f6d56d 0 3px,transparent 4px),
+    radial-gradient(circle at 45% 7px,#e75b65 0 3px,transparent 4px),
+    radial-gradient(circle at 51% 7px,#62b98a 0 3px,transparent 4px),
+    radial-gradient(circle at 57% 7px,#f6d56d 0 3px,transparent 4px),
+    radial-gradient(circle at 63% 7px,#e75b65 0 3px,transparent 4px),
+    radial-gradient(circle at 69% 7px,#62b98a 0 3px,transparent 4px),
+    radial-gradient(circle at 75% 7px,#f6d56d 0 3px,transparent 4px),
+    radial-gradient(circle at 81% 7px,#e75b65 0 3px,transparent 4px),
+    radial-gradient(circle at 87% 7px,#62b98a 0 3px,transparent 4px),
+    radial-gradient(circle at 93% 7px,#f6d56d 0 3px,transparent 4px),
+    linear-gradient(90deg,transparent 0 2%,rgba(23,107,69,.75) 2% 98%,transparent 98%);
+  opacity:.95;
+  filter:drop-shadow(0 2px 3px rgba(0,0,0,.18));
+}
+.brand>span{
+  background:linear-gradient(145deg,var(--christmas-red),#8f1728);
+  box-shadow:0 4px 12px rgba(180,35,54,.22);
+}
+.brand small{color:var(--christmas-green)}
+.sidebar{border-top:3px solid var(--christmas-green)}
+.sidebar nav button.nav-active{
+  background:linear-gradient(90deg,rgba(23,107,69,.13),rgba(180,35,54,.07));
+  color:var(--christmas-green);
+  box-shadow:inset 3px 0 var(--christmas-red);
+}
+.topbar h1{ text-decoration:underline; text-decoration-color:rgba(214,166,59,.55); text-decoration-thickness:3px; text-underline-offset:7px}
+.welcome{
+  background:linear-gradient(112deg,rgba(23,107,69,.12),rgba(255,255,255,.96) 48%,rgba(180,35,54,.09));
+  border:1px solid rgba(214,166,59,.58);
+  box-shadow:0 8px 24px rgba(23,107,69,.07);
+}
+.welcome-mark{color:var(--christmas-red)}
+.panel,.stat,.goal-card,.login-card,.modal-card{
+  border-top:2px solid rgba(23,107,69,.34);
+}
+.primary{
+  background:linear-gradient(135deg,var(--christmas-green),#105437);
+  border-color:var(--christmas-green);
+}
+.primary:hover{background:linear-gradient(135deg,#105437,#0b402a)}
+button.small-button, .table-wrap td .small-button{
+  background:var(--christmas-green);
+  border-color:#105437;
+}
+button.small-button:hover,.table-wrap td .small-button:hover{
+  background:#105437;border-color:#0b402a;
+}
+button.small-button.danger-button{
+  background:var(--christmas-red);border-color:#941b2b;
+}
+button.small-button.danger-button:hover{
+  background:#941b2b;border-color:#781523;
+}
+.tag{color:#8f1728;background:#fff0f1}
+.notice{border-color:rgba(214,166,59,.5);background:linear-gradient(110deg,#fff9e9,#f0f8f3);color:#38516f}
+.login-card .crown{color:var(--christmas-gold)}
+.login-card h1 span{color:var(--christmas-green)}
+.daily-shift-time{color:var(--christmas-green)}
+.daily-shift-members span{background:#e8f5ed;color:#145a3a}
+@media(max-width:700px){
+  .app-shell::before{height:10px}
+  .welcome{background:linear-gradient(112deg,rgba(23,107,69,.12),#fff 55%,rgba(180,35,54,.08))}
+}
