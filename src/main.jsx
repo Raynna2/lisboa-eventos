@@ -180,7 +180,7 @@ function App() {
     setLoading(true);
     try {
       const { error } = await supabase.auth.resetPasswordForEmail(loginEmail.trim(), {
-        redirectTo: 'https://lisboaeventos.netlify.app/'
+        redirectTo: window.location.origin
       });
       if (error) throw error;
       setRecoveryMessage('Se existir uma conta com esse e-mail, você receberá uma mensagem com o link para criar uma nova senha. Verifique também a caixa de spam.');
