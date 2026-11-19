@@ -389,3 +389,30 @@ body{
 .daily-shift-members{display:flex;flex-wrap:wrap;gap:7px}
 .daily-shift-members span{display:inline-flex;padding:6px 9px;border-radius:7px;background:#e7f0ff;color:#1b4f8c;font-size:11px;font-weight:700}
 @media(max-width:1050px){.availability-layout{grid-template-columns:1fr}}
+
+
+/* Efeito global de neve animada */
+body::after{
+  content:"";
+  position:fixed;
+  inset:-100vh 0 0;
+  z-index:9999;
+  pointer-events:none;
+  opacity:.72;
+  background-image:
+    radial-gradient(3px 3px at 20px 30px,rgba(255,255,255,.95) 98%,transparent),
+    radial-gradient(2px 2px at 80px 120px,rgba(255,255,255,.82) 98%,transparent),
+    radial-gradient(4px 4px at 150px 70px,rgba(255,255,255,.9) 98%,transparent),
+    radial-gradient(2px 2px at 220px 180px,rgba(255,255,255,.78) 98%,transparent),
+    radial-gradient(3px 3px at 300px 40px,rgba(255,255,255,.88) 98%,transparent);
+  background-size:360px 240px;
+  animation:lisboa-snow-fall 12s linear infinite;
+  will-change:transform;
+}
+@keyframes lisboa-snow-fall{
+  from{transform:translate3d(0,0,0)}
+  to{transform:translate3d(28px,100vh,0)}
+}
+@media(prefers-reduced-motion:reduce){
+  body::after{animation:none;inset:0;opacity:.28}
+}
