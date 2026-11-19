@@ -306,3 +306,28 @@ body{
 .agenda-unconfirmed{display:flex;align-items:center;gap:8px;font-size:12px;color:#23466e}
 .agenda-reschedule-summary{margin:8px 0;padding:8px 10px;border-radius:7px;background:#e7f0ff;color:#174f9e;font-size:12px;font-weight:700}
 @media(max-width:600px){.agenda-reschedule-fields{grid-template-columns:1fr}}
+
+
+/* Fundo: preencher toda a janela mantendo a imagem proporcional e legível */
+html,body,#root{min-height:100%;background-color:#06122c!important}
+body{
+  background-color:#06122c!important;
+  background-image:url('/lisboa-background.png')!important;
+  background-repeat:no-repeat!important;
+  background-position:center center!important;
+  background-size:cover!important;
+  background-attachment:fixed!important;
+}
+.app-shell,.main-area,.login-wrap,.center-screen{background:transparent!important}
+.sidebar{
+  background:rgba(4,17,43,.48)!important;
+  border-right:1px solid rgba(115,169,255,.22)!important;
+  backdrop-filter:blur(2px)!important;
+}
+.panel,.stat,.goal-card,.modal-card,.login-card{
+  background:rgba(255,255,255,.82)!important;
+  backdrop-filter:blur(6px)!important;
+}
+@media(max-width:760px){
+  body{background-attachment:scroll!important;background-position:center top!important}
+}
