@@ -379,3 +379,13 @@ body{
 .agenda-announcement-items span,.agenda-announcement-items small{color:#334155}
 .agenda-reschedule-summary{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
 .agenda-go-reschedule{background:#dbeafe;color:#1d4ed8;border-color:#93c5fd}
+
+/* Escala do Dia: painéis lado a lado em larguras iguais */
+.availability-layout{grid-template-columns:repeat(2,minmax(0,1fr));align-items:start}
+.availability-layout>.panel{min-width:0}
+.daily-shifts{display:grid;gap:12px}
+.daily-shift-card{display:grid;grid-template-columns:86px minmax(0,1fr);gap:12px;align-items:center;padding:14px;border:1px solid #dce6f2;border-radius:10px;background:#f7faff}
+.daily-shift-time{font:800 20px Manrope,sans-serif;color:#1c62b8;text-align:center}
+.daily-shift-members{display:flex;flex-wrap:wrap;gap:7px}
+.daily-shift-members span{display:inline-flex;padding:6px 9px;border-radius:7px;background:#e7f0ff;color:#1b4f8c;font-size:11px;font-weight:700}
+@media(max-width:1050px){.availability-layout{grid-template-columns:1fr}}
