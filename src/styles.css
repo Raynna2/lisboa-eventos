@@ -352,3 +352,6 @@ body{
 .schedule-footer-bars b{font-size:clamp(9px,1vw,15px)!important;font-weight:950!important}
 .agenda-reschedule-summary{font-weight:800}
 @media(max-width:760px){body{background-attachment:scroll!important;background-position:center top!important}}
+
+/* Remove a antiga camada duplicada que escondia a arte de fundo */
+.app-shell:before{content:none!important;display:none!important}
