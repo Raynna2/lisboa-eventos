@@ -78,7 +78,7 @@ function App() {
 
   const loadProfile = useCallback(async (user) => {
     if (!user) { setProfile(null); return; }
-    const { data, error } = await supabase.from('staff_profiles').select('*').eq('user_id', user.id).maybeSingle();
+    const { data, error } = await supabase.from('staff_directory').select('*').eq('user_id', user.id).maybeSingle();
     if (error) throw error;
     if (!data || data.status !== 'Ativo') {
       await supabase.auth.signOut();
@@ -94,7 +94,7 @@ function App() {
     setBusy(true);
     try {
       const results = await Promise.all([
-        supabase.from('staff_profiles').select('user_id,staff_id,name,discord,whatsapp,phone,eqpg,role,status,avatar_url,created_at').order('name'),
+        supabase.from('staff_directory').select('user_id,staff_id,name,discord,whatsapp,phone,eqpg,role,status,avatar_url,created_at').order('name'),
         supabase.from('events').select('*').order('event_date', { ascending: true }),
         supabase.from('member_event_credits').select('*').order('created_at', { ascending: false }),
         supabase.from('team_goals').select('*').order('created_at', { ascending: false }),
