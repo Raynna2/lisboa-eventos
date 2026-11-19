@@ -328,7 +328,10 @@ function App() {
     if(absent&&payload.absence_end_date<=payload.available_date)throw new Error('A data de retorno precisa ser posterior ao início da ausência.');
     const {error}=await supabase.from('availability').insert(payload);if(error)throw error;
     await writeLog(absent?'Ausência registrada':'Disponibilidade publicada',payload.available_date+(absent?' até o retorno em '+payload.absence_end_date+' · '+payload.absence_reason:''),'availability');
-    setModal(null);await loadData();await loadProfile(session.user);notify(absent?'Ausência registrada. Status atualizado para Afastado.':'Disponibilidade publicada.');
+    setModal(null);await loadData();
+    const awayNow=absent&&payload.available_date<=today()&&payload.absence_end_date>today();
+    if(awayNow){await supabase.auth.signOut();setSession(null);setProfile(null);setPage('Dashboard');setAuthMode('login');notify('Ausência registrada. Seu status foi alterado para Afastado até a data de retorno.');}
+    else notify(absent?'Ausência registrada.':'Disponibilidade publicada.');
   };
   const canDeleteAvailability = (row) => {
     if(row.user_id===session.user.id) return true;
