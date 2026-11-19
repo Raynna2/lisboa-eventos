@@ -336,9 +336,10 @@ function App() {
   };
   const canDeleteAvailability = (row) => {
     if(row.user_id===session.user.id) return true;
-    if(!['Responsável','Responsável Geral'].includes(profile?.role)) return false;
+    if(!['Responsável','Responsável Geral','Direção'].includes(profile?.role)) return false;
     const target=members.find(m=>m.user_id===row.user_id);
-    return profile.role==='Responsável Geral' || target?.role!=='Responsável Geral';
+    if(target?.role==='Direção') return false;
+    return profile.role==='Direção' || target?.role!=='Responsável Geral';
   };
   const deleteAvailability = async (row) => {
     if(!canDeleteAvailability(row)) return notify('Você não tem permissão para excluir esta escala.');
@@ -500,7 +501,7 @@ function EventAdminLog({rows,members}){const [page,setPage]=useState(0);const li
 function Modal({modal,close,members,session,saveEvent,saveEventCredit,saveGoal,saveSchedule,saveAvailability,saveDailyShift,saveDailySchedule,saveMember,saveOwnProfile,saveMemberPassword,notify,currentRole}){
  const [form,setForm]=useState(modal.data||{});const [saving,setSaving]=useState(false);const update=(k,v)=>setForm(p=>({...p,[k]:v}));
  const eventStaff=members.filter(m=>m.status==='Ativo');
- const shiftStaff=members.filter(m=>m.status==='Ativo'&&['Aprendiz','Analista','Especialista','Supervisor','Responsável','Responsável Geral'].includes(m.role));
+ const shiftStaff=members.filter(m=>m.status==='Ativo'&&['Aprendiz','Analista','Especialista','Supervisor','Responsável','Responsável Geral','Direção'].includes(m.role));
  const toggleShiftMember=(id,checked)=>{const next=checked?[...(form.member_ids||[]),id]:(form.member_ids||[]).filter(x=>x!==id);if(next.length>4){notify('Selecione no máximo 4 membros.');return;}update('member_ids',next);};
  const toggleStaff=(id,checked)=>{const next=checked?[...(form.staff_ids||[]),id]:(form.staff_ids||[]).filter(x=>x!==id);const senior=next.filter(x=>eventStaff.find(m=>m.user_id===x)?.role!=='Treinamento');if(senior.length>4){notify('Máximo de 4 staffs com cargo de Aprendiz ou superior.');return;}update('staff_ids',next);};
  const field=(label,key,type='text',required=false)=><label>{label}<input type={type} value={form[key]??''} required={required} disabled={form.mode==='view'} onChange={e=>update(key,e.target.value)}/></label>;
