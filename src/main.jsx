@@ -274,6 +274,7 @@ function App() {
     const targetTime=isRescheduled?(String(values.reschedule_time).length===5?String(values.reschedule_time)+':00':String(values.reschedule_time)):null;
     const targetExisting=isRescheduled?agendaEntries.find(x=>x.agenda_date===targetDate&&x.time_slot?.slice(0,5)===targetTime.slice(0,5)):null;
     const linkedTarget=targetExisting&&existing&&targetExisting.origin_entry_id===existing.id?targetExisting:null;
+    const previousLinkedTarget=existing?agendaEntries.find(x=>x.origin_entry_id===existing.id):null;
     if(targetExisting&&!linkedTarget) throw new Error('Já existe outro agendamento nessa data e horário. Escolha outro horário para não substituir o compromisso existente.');
     const now=new Date().toISOString();
     const payload={agenda_date:date,time_slot:normalizedTime,event:values.event||'',host_id:values.host_id||'',text:values.text||'',status:nextStatus,reschedule_date:isRescheduled?targetDate:null,reschedule_time:isRescheduled?targetTime:null,reschedule_unconfirmed:nextStatus==='Remarcado'&&!!values.reschedule_unconfirmed,created_by:existing?.created_by||session.user.id,updated_at:now};
@@ -300,7 +301,12 @@ function App() {
         movedEntry=result.data;
       }
     }
-    setAgendaEntries(old=>[...old.filter(x=>x.id!==savedOriginal.id&&x.id!==movedEntry?.id),savedOriginal,...(movedEntry?[movedEntry]:[])].sort((a,b)=>(a.agenda_date+a.time_slot).localeCompare(b.agenda_date+b.time_slot)));
+    const targetChanged=previousLinkedTarget&&(!movedEntry||previousLinkedTarget.id!==movedEntry.id);
+    if(targetChanged){
+      const removed=await supabase.from('agenda_entries').delete().eq('id',previousLinkedTarget.id);
+      if(removed.error) throw removed.error;
+    }
+    setAgendaEntries(old=>[...old.filter(x=>x.id!==savedOriginal.id&&x.id!==movedEntry?.id&&x.id!==(targetChanged?previousLinkedTarget.id:null)),savedOriginal,...(movedEntry?[movedEntry]:[])].sort((a,b)=>(a.agenda_date+a.time_slot).localeCompare(b.agenda_date+b.time_slot)));
     await writeLog(existing?'Agenda editada':'Agenda publicada',date+' '+normalizedTime+' · '+(values.event||'Evento')+' · Anfitrião '+(values.host_id||'—')+(isRescheduled?' · Novo horário '+targetDate+' '+targetTime.slice(0,5):''),'agenda_entries',savedOriginal.id);
     return {original:savedOriginal,moved:movedEntry};
   };
