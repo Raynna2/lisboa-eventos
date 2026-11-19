@@ -355,3 +355,27 @@ body{
 
 /* Remove a antiga camada duplicada que escondia a arte de fundo */
 .app-shell:before{content:none!important;display:none!important}
+
+
+/* Agenda: status com cores consistentes e anúncios no Dashboard */
+.agenda-entry-heading{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.agenda-status-badge{display:inline-flex;align-items:center;border-radius:999px;padding:5px 11px;font-size:12px;font-weight:900;background:#fff;color:#172033;border:1px solid #d1d5db}
+.agenda-status-badge.status-agendado{background:#fff;color:#172033;border-color:#d1d5db}
+.agenda-status-badge.status-concluído{background:#dcfce7;color:#166534;border-color:#86efac}
+.agenda-status-badge.status-cancelado{background:#fee2e2;color:#991b1b;border-color:#fca5a5}
+.agenda-status-badge.status-remarcado{background:#dbeafe;color:#1d4ed8;border-color:#93c5fd}
+.agenda-status-badge.status-não-realizado{background:#ffedd5;color:#9a3412;border-color:#fdba74}
+.agenda-public-entry{border-left:5px solid #d1d5db}
+.agenda-public-entry:has(.status-concluído){border-left-color:#22c55e}
+.agenda-public-entry:has(.status-cancelado){border-left-color:#ef4444}
+.agenda-public-entry:has(.status-remarcado){border-left-color:#3b82f6}
+.agenda-public-entry:has(.status-não-realizado){border-left-color:#f97316}
+.agenda-announcement{border-left:5px solid #2563eb}
+.agenda-announcement-managers{border-left-color:#f59e0b}
+.agenda-announcement-title{font-size:18px;font-weight:950;margin-bottom:8px}
+.agenda-announcement>p{font-weight:650;line-height:1.5}
+.agenda-announcement-items{display:grid;gap:8px;margin:12px 0}
+.agenda-announcement-items>div{display:grid;gap:3px;padding:10px 12px;border-radius:10px;background:rgba(255,255,255,.68)}
+.agenda-announcement-items span,.agenda-announcement-items small{color:#334155}
+.agenda-reschedule-summary{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.agenda-go-reschedule{background:#dbeafe;color:#1d4ed8;border-color:#93c5fd}
