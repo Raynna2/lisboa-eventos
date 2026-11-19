@@ -343,8 +343,6 @@ function App() {
   const saveOwnProfile = async (form) => {
     const staffId=String(form.staff_id||'').trim(), name=String(form.name||'').trim();
     if(!staffId||!name) throw new Error('Nome e ID são obrigatórios.');
-    const {error:profileError}=await supabase.rpc('update_own_staff_profile',{p_staff_id:staffId,p_name:name,p_discord:form.discord||null,p_phone:form.phone||null,p_eqpg:form.eqpg||null});
-    if(profileError) throw profileError;
     const authChanges={};
     const nextEmail=String(form.email||'').trim();
     if(nextEmail && nextEmail.toLowerCase()!==String(session.user.email||'').toLowerCase()) authChanges.email=nextEmail;
@@ -360,6 +358,8 @@ function App() {
       emailPending=!!authChanges.email;
       if(data?.user) setSession(current=>current?{...current,user:data.user}:current);
     }
+    const {error:profileError}=await supabase.rpc('update_own_staff_profile',{p_staff_id:staffId,p_name:name,p_discord:form.discord||null,p_phone:form.phone||null,p_eqpg:form.eqpg||null});
+    if(profileError) throw profileError;
     await loadProfile(session.user);
     await writeLog('Dados do próprio perfil atualizados','Nome, ID e dados de contato','staff_profiles',session.user.id);
     setModal(null);
