@@ -458,7 +458,7 @@ function App() {
       {page==='Escala do Dia' && <div className="two-col availability-layout">
         <section className="panel">
           <div className="panel-head"><div><h2>Disponibilidade</h2><p>Informe seus horários ou registre uma ausência.</p></div><button className="primary" onClick={()=>setModal({type:'availability',data:{available_date:today(),is_absent:false}})}>＋ Informar</button></div>
-          <AvailabilityTable rows={availability.filter(a=>canViewMemberDataButton||a.user_id===session.user.id)} members={members} canDelete={canDeleteAvailability} onDelete={deleteAvailability}/>
+          <AvailabilityTable rows={availability.filter(a=>canEditMemberData||a.user_id===session.user.id)} members={members} canDelete={canDeleteAvailability} onDelete={deleteAvailability}/>
         </section>
         <section className="panel">
           <div className="panel-head"><div><h2>Escala</h2><p>Escalas do dia para toda a equipe.</p></div>{canManageDailySchedule&&<button className="primary" onClick={()=>setModal({type:'daily_shift',data:{start_time:'12:00',member_ids:[]}})}>＋ Criar</button>}</div>
