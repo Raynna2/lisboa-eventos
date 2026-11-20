@@ -501,3 +501,12 @@ button.small-button.danger-button:hover{
   .app-shell::before{height:10px}
   .welcome{background:linear-gradient(112deg,rgba(23,107,69,.12),#fff 55%,rgba(180,35,54,.08))}
 }
+
+/* Avisos — apresentação editorial no mesmo padrão visual das Metas */
+.announcement-list{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.announcement-card{width:100%;padding:24px 26px;background:#fff}
+.announcement-card h3{font-size:17px;margin:10px 0}
+.announcement-card .goal-description{font-size:13px;line-height:1.65;white-space:pre-wrap;overflow-wrap:anywhere;color:#26364d}
+.announcement-image{display:block;width:100%;height:auto;max-height:none;object-fit:contain;border-radius:10px;margin:16px 0;border:1px solid #dce6f2}
+.announcement-meta{display:block;margin-top:14px;color:#74869e;font-size:10px}
+@media(max-width:700px){.announcement-card{padding:18px}}
