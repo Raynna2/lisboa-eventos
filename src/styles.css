@@ -573,3 +573,8 @@ button.small-button.danger-button:hover{
 .mystery-box-card button{width:100%}
 .box-result{margin:18px 0;padding:18px;border:1px solid #bfd3ed;border-radius:14px;background:#f3f8ff}
 @media(max-width:800px){.mystery-box-grid{grid-template-columns:1fr}.wallet-strip{max-width:100%}}
+
+
+/* Controles de carteiras dentro da janela Dados da Equipe */
+.wallet-admin-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;padding-top:14px;border-top:1px solid #dce6f2}
+.wallet-admin-actions button{min-width:120px}
