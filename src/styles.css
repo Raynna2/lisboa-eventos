@@ -523,3 +523,12 @@ button.small-button.danger-button:hover{
 .suggestion-chat{margin-top:16px;padding:16px;border:1px solid #d7e4f4;border-radius:12px;background:#f8fbff}
 .suggestion-chat-message{padding:10px 12px;margin:8px 0;border-radius:9px;background:#edf4fc;color:#243b58;overflow-wrap:anywhere}
 .suggestion-chat-message small{display:block;margin-top:4px;color:#71839b}
+
+/* Status das sugestões */
+.status.info{background:#153c70;color:#78b7ff;border:1px solid #286bb7}
+.status.cyan{background:#123f4b;color:#68e4f2;border:1px solid #1e9eb2}
+.status.rejected{background:#4a1e27;color:#ff8798;border:1px solid #a83a50}
+.status.delivered{background:#173d2b;color:#7ee0a8;border:1px solid #2d8a59}
+.suggestion-chat{margin-top:16px;padding:16px;border:1px solid #d7e4f4;border-radius:12px;background:#f8fbff}
+.suggestion-chat-message{padding:10px 12px;margin:8px 0;border-radius:9px;background:#edf4fc;color:#243b58;overflow-wrap:anywhere}
+.suggestion-chat-message small{display:block;margin-top:4px;color:#71839b}
