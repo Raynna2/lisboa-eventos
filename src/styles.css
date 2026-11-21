@@ -546,3 +546,30 @@ button.small-button.danger-button:hover{
 .checkbox-line{display:flex;align-items:center;gap:9px}
 .checkbox-line input{width:auto}
 @media(max-width:600px){.suggestion-chat-window{right:10px;bottom:10px;width:calc(100vw - 20px);height:min(72vh,620px)}}
+
+/* Menu principal com rolagem vertical para muitas abas */
+.sidebar nav{display:flex;flex-direction:column;gap:5px;flex:1;min-height:0;overflow-y:auto;overflow-x:hidden;padding:0 4px 12px 0;scrollbar-width:thin;scrollbar-color:#8aa9d1 #edf3fb}
+.sidebar nav::-webkit-scrollbar{width:7px}
+.sidebar nav::-webkit-scrollbar-track{background:#edf3fb;border-radius:10px}
+.sidebar nav::-webkit-scrollbar-thumb{background:#8aa9d1;border-radius:10px}
+.sidebar nav button{flex:0 0 auto}
+.wallet-strip{display:flex;align-items:center;gap:12px;margin:16px 0 22px;padding:14px 16px;border:1px solid #d6e4f6;border-radius:15px;background:linear-gradient(135deg,#f4f8ff,#eaf2ff);max-width:460px}
+.wallet-card{display:flex;align-items:center;gap:12px;flex:1}
+.wallet-icon{font-size:32px}
+.wallet-card small{display:block;font-size:10px;letter-spacing:1.2px;color:#71839b;font-weight:800}
+.wallet-card strong{display:block;font-size:23px;color:#164b88}
+.wallet-card strong span{font-size:13px;font-weight:600}
+.wallet-mini{padding:9px 13px;background:#edf4ff;border:1px solid #d5e4f8;border-radius:12px;font-weight:800;color:#164b88}
+.mystery-box-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px;margin:20px 0}
+.mystery-box-card{display:flex;flex-direction:column;gap:10px;padding:18px;border:1px solid #d9e4f3;border-radius:16px;background:#fff;box-shadow:0 8px 22px rgba(31,70,120,.07)}
+.mystery-box-art{height:110px;display:grid;place-items:center;border-radius:12px;background:linear-gradient(135deg,#f0dfc8,#b88751);font-size:52px}
+.mystery-box-art.prata{background:linear-gradient(135deg,#f1f4f7,#aab6c4)}
+.mystery-box-art.ouro{background:linear-gradient(135deg,#fff1b7,#d69c26)}
+.mystery-box-card h3{margin:0}
+.box-cost{font-weight:800;color:#174c86;margin:0}
+.drop-rates{display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px;color:#61738c}
+.drop-rates span{display:flex;justify-content:space-between;gap:5px;padding:6px;background:#f5f8fc;border-radius:7px}
+.box-available{margin:0;color:#526984}
+.mystery-box-card button{width:100%}
+.box-result{margin:18px 0;padding:18px;border:1px solid #bfd3ed;border-radius:14px;background:#f3f8ff}
+@media(max-width:800px){.mystery-box-grid{grid-template-columns:1fr}.wallet-strip{max-width:100%}}
