@@ -338,7 +338,56 @@ function App() {
   const addDailyDraftItem=()=>{const name=dailyDraftName.trim();if(!name||!dailyDraftTime)return notify('Informe o nome do evento e o horário.');setDailyDraft(old=>[...(old||[]),{event_name:name,event_time:dailyDraftTime,category:dailyDraftCategory}].sort((a,b)=>a.event_time.localeCompare(b.event_time)));setDailyDraftName('');};
   const beginDailyScheduleEdit=()=>{setDailyDraft(dailySchedule.map(x=>({...x})));setDailyDraftName('');};
   const cancelDailyScheduleEdit=()=>{setDailyDraft(null);setDailyDraftName('');};
-  const renderDailyScheduleImage=async(items)=>{const img=new Image();img.src='/cronograma-template.png';await img.decode();const canvas=document.createElement('canvas');canvas.width=1600;canvas.height=900;const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,1600,900);const isHighlightTime=t=>['21:00','22:00'].includes(String(t||'').slice(0,5));const categories=[{key:'EVENTOS',x:67,w:465},{key:'PVP',x:572,w:465},{key:'ENTRETENIMENTO',x:1075,w:465}];for(const col of categories){const rows=items.filter(x=>x.category===col.key).sort((a,b)=>a.event_time.localeCompare(b.event_time));const lineHeight=Math.min(44,340/Math.max(rows.length,1));const fontSize=Math.max(15,Math.min(29,lineHeight*.72));let y=350+lineHeight/2;for(const item of rows){ctx.save();ctx.fillStyle='#fff';ctx.shadowColor='#000';ctx.shadowBlur=3;ctx.font='900 '+Math.max(14,fontSize-1)+'px Arial';ctx.textBaseline='middle';ctx.fillText(String(item.event_time||'').slice(0,5),col.x,y,68);ctx.font='900 '+fontSize+'px Arial';ctx.fillText(String(item.event_name||''),col.x+76,y,col.w-82);ctx.restore();y+=lineHeight;}}const drawHighlight=(time,x,width)=>{const matches=items.filter(v=>String(v.event_time||'').slice(0,5)===time);if(!matches.length)return;const labels=matches.map(v=>time+' · '+String(v.event_name||'')+(matches.length>1?' · '+String(v.category||''):''));let size=matches.length>1?29:40;ctx.save();ctx.fillStyle='#fff';ctx.shadowColor='#000';ctx.shadowBlur=5;ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='900 '+size+'px Arial';const maxLines=matches.length>2?3:2;const lines=[];for(const label of labels){let remaining=label;while(remaining&&lines.length<maxLines){let part=remaining;while(ctx.measureText(part).width>width-24&&part.length>1){part=part.slice(0,-1);}if(part!==remaining){const cut=part.lastIndexOf(' ');if(cut>0)part=part.slice(0,cut);}lines.push(part);remaining=remaining.slice(part.length).trim();}}const lineHeight=size+5;const startY=805-((lines.length-1)*lineHeight)/2;lines.forEach((line,index)=>ctx.fillText(line,x+width/2,startY+index*lineHeight,width-24));ctx.restore();};drawHighlight('21:00',210,520);drawHighlight('22:00',900,560);return await new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(new Error('Não foi possível gerar a imagem do cronograma.')),'image/png'));};
+  const renderDailyScheduleImage=async(items)=>{
+    const img=new Image();img.src='/cronograma-template.png';await img.decode();
+    const canvas=document.createElement('canvas');canvas.width=1600;canvas.height=900;
+    const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,1600,900);
+    const categories=[{key:'EVENTOS',x:67,w:465},{key:'PVP',x:572,w:465},{key:'ENTRETENIMENTO',x:1075,w:465}];
+    const wrapText=(text,maxWidth,font)=>{ctx.font=font;const words=String(text||'').split(/\\s+/).filter(Boolean);const lines=[];let line='';for(const word of words){const test=line?line+' '+word:word;if(ctx.measureText(test).width<=maxWidth||!line){line=test;}else{lines.push(line);line=word;}}if(line)lines.push(line);return lines;};
+    for(const col of categories){
+      const rows=items.filter(x=>x.category===col.key).sort((a,b)=>String(a.event_time||'').localeCompare(String(b.event_time||'')));
+      if(!rows.length)continue;
+      const rowHeight=Math.min(48,340/rows.length);
+      const fontSize=Math.max(14,Math.min(25,rowHeight*.52));
+      rows.forEach((item,index)=>{
+        const centerY=350+rowHeight*index+rowHeight/2;
+        const time=String(item.event_time||'').slice(0,5);
+        const event=String(item.event_name||'');
+        ctx.save();ctx.fillStyle='#fff';ctx.shadowColor='#000';ctx.shadowBlur=3;
+        ctx.textBaseline='middle';ctx.textAlign='center';
+        ctx.font='900 '+Math.max(13,fontSize-1)+'px Arial';
+        ctx.fillText(time,col.x+35,centerY,66);
+        const eventX=col.x+76;const eventWidth=col.w-82;
+        const eventFont='900 '+fontSize+'px Arial';
+        let lines=wrapText(event,eventWidth-12,eventFont);
+        if(lines.length>2){lines=[lines[0],lines.slice(1).join(' ')];}
+        ctx.font=eventFont;
+        const lineHeight=Math.min(26,fontSize+2);
+        const startY=centerY-((lines.length-1)*lineHeight)/2;
+        lines.forEach((line,lineIndex)=>ctx.fillText(line,eventX+eventWidth/2,startY+lineIndex*lineHeight,eventWidth-12));
+        ctx.restore();
+      });
+    }
+    const drawHighlight=(time,x,width)=>{
+      const matches=items.filter(v=>String(v.event_time||'').slice(0,5)===time);
+      if(!matches.length)return;
+      let size=matches.length>1?27:38;
+      const maxWidth=width-28;
+      const labels=matches.map(v=>time+' · '+String(v.event_name||'')+(matches.length>1?' · '+String(v.category||''):'')); 
+      let lines=[];
+      while(size>=18){
+        const font='900 '+size+'px Arial';lines=labels.flatMap(label=>wrapText(label,maxWidth,font));
+        if(lines.length<=4)break;size-=2;
+      }
+      ctx.save();ctx.fillStyle='#fff';ctx.shadowColor='#000';ctx.shadowBlur=5;
+      ctx.textAlign='center';ctx.textBaseline='middle';ctx.font='900 '+size+'px Arial';
+      const lineHeight=size+6;const startY=805-((lines.length-1)*lineHeight)/2;
+      lines.forEach((line,index)=>ctx.fillText(line,x+width/2,startY+index*lineHeight,maxWidth));
+      ctx.restore();
+    };
+    drawHighlight('21:00',210,520);drawHighlight('22:00',900,560);
+    return await new Promise((resolve,reject)=>canvas.toBlob(blob=>blob?resolve(blob):reject(new Error('Não foi possível gerar a imagem do cronograma.')),'image/png'));
+  };
   const postDailySchedule=async()=>{if(!canManageDailySchedule)return notify('Sem permissão.');const items=dailyDraft||[];if(!items.length)return notify('Adicione pelo menos um evento antes de finalizar.');setBusy(true);try{const imageBlob=await renderDailyScheduleImage(items);const existingIds=items.filter(x=>x.id).map(x=>x.id);for(const item of items){const payload={schedule_date:today(),category:item.category,event_name:item.event_name.trim(),event_time:item.event_time,created_by:item.created_by||session.user.id,updated_by:session.user.id,updated_at:new Date().toISOString()};const result=item.id?await supabase.from('daily_schedule_items').update(payload).eq('id',item.id):await supabase.from('daily_schedule_items').insert(payload);if(result.error)throw result.error;}const removed=dailySchedule.filter(x=>!existingIds.includes(x.id));if(removed.length){const {error}=await supabase.from('daily_schedule_items').delete().in('id',removed.map(x=>x.id));if(error)throw error;}const imagePath='cronogramas/'+today()+'.png';const {error:imageError}=await supabase.storage.from('lisboa-media').upload(imagePath,imageBlob,{upsert:true,contentType:'image/png'});if(imageError)throw imageError;await writeLog(dailySchedule.length?'Cronograma atualizado':'Cronograma publicado',items.length+' item(ns) no cronograma','daily_schedule_items');setDailyDraft(null);setDailyImageVersion(v=>v+1);await loadData();notify('Cronograma publicado e imagem gerada com sucesso.');}catch(e){notify(errText(e));}finally{setBusy(false);}};
   const downloadDailyScheduleImage=()=>{const url=supabase.storage.from('lisboa-media').getPublicUrl('cronogramas/'+today()+'.png').data.publicUrl;const a=document.createElement('a');a.href=url;a.download='lisboa-eventos-cronograma-'+today()+'.png';a.target='_blank';document.body.appendChild(a);a.click();a.remove();};
   const copyDailyScheduleImage=async()=>{try{const url=supabase.storage.from('lisboa-media').getPublicUrl('cronogramas/'+today()+'.png').data.publicUrl;const response=await fetch(url);if(!response.ok)throw new Error('Não foi possível acessar a imagem publicada.');const blob=await response.blob();if(!navigator.clipboard?.write||!window.ClipboardItem)throw new Error('Seu navegador não permite copiar imagens. Use Baixar imagem.');await navigator.clipboard.write([new ClipboardItem({[blob.type]:blob})]);notify('Imagem copiada.');}catch(e){notify(errText(e));}};
