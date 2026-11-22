@@ -592,7 +592,7 @@ button.small-button.danger-button:hover{
 .member-wallet-summary>div{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 11px;border-radius:8px;background:#f1f6fd;color:#24466f}
 .member-wallet-summary b{font-size:17px;color:#174c86}
 .mystery-box-art{height:140px;background-color:#f6f8fb;background-repeat:no-repeat;background-position:center;background-size:contain;font-size:0}
-.mystery-box-art.bronze{background-image:url('/baú-bronze.png'),linear-gradient(135deg,#f0dfc8,#b88751)}
-.mystery-box-art.prata{background-image:url('/baú-prata.png'),linear-gradient(135deg,#f1f4f7,#aab6c4)}
-.mystery-box-art.ouro{background-image:url('/baú-ouro.png'),linear-gradient(135deg,#fff1b7,#d69c26)}
+.mystery-box-art.bronze{background-image:url('/baú-bronze.svg'),linear-gradient(135deg,#f0dfc8,#b88751)}
+.mystery-box-art.prata{background-image:url('/baú-prata.svg'),linear-gradient(135deg,#f1f4f7,#aab6c4)}
+.mystery-box-art.ouro{background-image:url('/baú-ouro.svg'),linear-gradient(135deg,#fff1b7,#d69c26)}
 @media(max-width:600px){.member-wallet-summary{grid-template-columns:1fr}.member-wallet-summary h3{grid-column:auto}.member-actions-grid button{flex:1 1 130px}}
