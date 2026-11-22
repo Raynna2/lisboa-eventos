@@ -264,7 +264,10 @@ function App() {
     const {error}=await supabase.from('events').insert(payload); if(error) throw error;
     const staffNames=chosen.map(id=>members.find(m=>m.user_id===id)?.name||'Membro').join(', ')||'Nenhum staff marcado';
     const eventLogDetail='Evento: '+payload.name+' | Registrado por: '+profile.name+' | Staff: '+staffNames+' | Data: '+(payload.event_date||'—')+' | Hora: '+(payload.start_time||'—');
-    await writeLog('Evento registrado',eventLogDetail+' | Eventos contabilizados: '+(isDoubleCreditEvent(payload)?2:1)+' por membro | Chaves creditadas: 1 por membro participante','events');
+    const doubleReason=isLateGame(payload)?'Lategame':(payload.event_date&&new Date(payload.event_date+'T12:00:00').getDay()===0?'Domingo':'');
+    const eventCreditsCount=isDoubleCreditEvent(payload)?2:1;
+    await writeLog('Evento registrado',eventLogDetail+' | Eventos contabilizados: '+eventCreditsCount+' por membro'+(doubleReason?' | Motivo do dobro: '+doubleReason:'')+' | Chaves creditadas: 1 por membro participante','events');
+    if(doubleReason) await writeLog('Eventos em dobro aplicados',payload.name+' | Motivo: '+doubleReason+' | Quantidade: 2 eventos por membro | Data: '+payload.event_date+' | Staff: '+staffNames,'events');
     setModal(null); await loadData(); notify('Evento registrado com sucesso.');
   };
   const saveAnnouncement = async (form) => {
@@ -371,49 +374,44 @@ function App() {
     const canvas=document.createElement('canvas');canvas.width=1600;canvas.height=900;
     const ctx=canvas.getContext('2d');ctx.drawImage(img,0,0,1600,900);
     const categories=[{key:'EVENTOS',x:67,w:465},{key:'PVP',x:572,w:465},{key:'ENTRETENIMENTO',x:1075,w:465}];
-    const condensedFont=size=>`900 ${size}px Impact, "Arial Narrow", "Roboto Condensed", Arial, sans-serif`;
-    const wrapText=(text,maxWidth,font)=>{ctx.font=font;const words=String(text||'').trim().split(/\s+/).filter(Boolean);const lines=[];let line='';for(const word of words){const test=line?line+' '+word:word;if(ctx.measureText(test).width<=maxWidth||!line){line=test;}else{lines.push(line);line=word;}}if(line)lines.push(line);return lines;};
+    const fontFor=size=>`900 ${size}px Impact, "Arial Narrow", "Roboto Condensed", Arial, sans-serif`;
+    const fitSingleLine=(text,maxWidth,startSize=34)=>{
+      let size=startSize;
+      while(size>18){ctx.font=fontFor(size);if(ctx.measureText(text).width<=maxWidth)break;size-=1;}
+      return fontFor(Math.max(18,size));
+    };
     for(const col of categories){
       const rows=items.filter(x=>x.category===col.key).sort((a,b)=>String(a.event_time||'').localeCompare(String(b.event_time||'')));
       if(!rows.length)continue;
-      const contentTop=350;
-      const contentHeight=280;
-      const rowHeight=Math.min(44,contentHeight/rows.length);
-      const fontSize=Math.max(24,Math.min(31,rowHeight*.72));
+      const contentTop=350,contentHeight=280,rowHeight=Math.min(62,contentHeight/rows.length);
       rows.forEach((item,index)=>{
         const centerY=contentTop+rowHeight*index+rowHeight/2;
         const time=String(item.event_time||'').slice(0,5);
         const event=String(item.event_name||'').toLocaleUpperCase('pt-BR');
-        ctx.save();ctx.fillStyle='#fff';ctx.shadowColor='#000';ctx.shadowBlur=3;
-        ctx.textBaseline='middle';ctx.textAlign='left';
-        ctx.font=condensedFont(Math.max(22,fontSize-2));
-        const timeX=col.x+66;
-        ctx.fillText(time,timeX,centerY,58);
-        const eventX=col.x+136;const eventWidth=col.w-150;
-        const eventFont=condensedFont(fontSize);
-        let lines=wrapText(event,eventWidth-8,eventFont);
-        if(lines.length>2){lines=[lines[0],lines.slice(1).join(' ')];}
-        ctx.font=eventFont;
-        const lineHeight=Math.min(36,fontSize+3);
-        const startY=centerY-((lines.length-1)*lineHeight)/2;
-        lines.forEach((line,lineIndex)=>ctx.fillText(line,eventX,startY+lineIndex*lineHeight,eventWidth-8));
+        const line=time+' | '+event;
+        const maxWidth=col.w-42;
+        ctx.save();ctx.fillStyle='#fff';ctx.shadowColor='#000';ctx.shadowBlur=4;
+        ctx.textBaseline='middle';ctx.textAlign='center';
+        ctx.font=fitSingleLine(line,maxWidth,Math.min(36,rowHeight*.72));
+        ctx.fillText(line,col.x+col.w/2,centerY,maxWidth);
         ctx.restore();
       });
     }
     const drawHighlight=(time,x,width)=>{
       const matches=items.filter(v=>String(v.event_time||'').slice(0,5)===time);
       if(!matches.length)return;
-      let size=matches.length>1?31:43;
+      const labels=matches.map(v=>time+' | '+String(v.event_name||'').toLocaleUpperCase('pt-BR'));
       const maxWidth=width-28;
-      const labels=matches.map(v=>time+' · '+String(v.event_name||'')+(matches.length>1?' · '+String(v.category||''):'')); 
-      let lines=[];
-      while(size>=20){
-        const font='900 '+size+'px Arial';lines=labels.flatMap(label=>wrapText(label,maxWidth,font));
-        if(lines.length<=4)break;size-=2;
+      let size=matches.length>1?29:42;
+      const lines=labels;
+      while(size>18){
+        ctx.font=fontFor(size);
+        if(lines.every(line=>ctx.measureText(line).width<=maxWidth))break;
+        size-=1;
       }
       ctx.save();ctx.fillStyle='#fff';ctx.shadowColor='#000';ctx.shadowBlur=5;
-      ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=condensedFont(size);
-      const lineHeight=size+7;const startY=805-((lines.length-1)*lineHeight)/2;
+      ctx.textAlign='center';ctx.textBaseline='middle';ctx.font=fontFor(Math.max(18,size));
+      const lineHeight=Math.max(25,size+7);const startY=805-((lines.length-1)*lineHeight)/2;
       lines.forEach((line,index)=>ctx.fillText(line,x+width/2,startY+index*lineHeight,maxWidth));
       ctx.restore();
     };
