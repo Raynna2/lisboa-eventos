@@ -578,3 +578,21 @@ button.small-button.danger-button:hover{
 /* Controles de carteiras dentro da janela Dados da Equipe */
 .wallet-admin-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:8px;padding-top:14px;border-top:1px solid #dce6f2}
 .wallet-admin-actions button{min-width:120px}
+
+
+/* Equipe: ações agrupadas e saldos restritos dentro de Dados */
+.member-actions-panel{margin-top:16px;padding:14px;border:1px solid #d7e3f2;border-radius:12px;background:#f7faff}
+.member-actions-panel h3,.member-wallet-summary h3{margin:0 0 8px;color:#174c86;font-size:14px}
+.member-actions-panel p{margin:0 0 12px;color:#61738c;font-size:12px}
+.member-actions-grid{display:flex;flex-wrap:wrap;gap:9px}
+.member-actions-grid button{min-width:125px}
+.member-actions-grid .danger-button{background:#b42336;color:#fff;border:1px solid #941b2b;border-radius:8px;padding:9px 13px;font-weight:800}
+.member-wallet-summary{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:14px;padding:13px;border:1px solid #dce6f2;border-radius:10px;background:#fff}
+.member-wallet-summary h3{grid-column:1/-1}
+.member-wallet-summary>div{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 11px;border-radius:8px;background:#f1f6fd;color:#24466f}
+.member-wallet-summary b{font-size:17px;color:#174c86}
+.mystery-box-art{height:140px;background-color:#f6f8fb;background-repeat:no-repeat;background-position:center;background-size:contain;font-size:0}
+.mystery-box-art.bronze{background-image:url('/baú-bronze.png'),linear-gradient(135deg,#f0dfc8,#b88751)}
+.mystery-box-art.prata{background-image:url('/baú-prata.png'),linear-gradient(135deg,#f1f4f7,#aab6c4)}
+.mystery-box-art.ouro{background-image:url('/baú-ouro.png'),linear-gradient(135deg,#fff1b7,#d69c26)}
+@media(max-width:600px){.member-wallet-summary{grid-template-columns:1fr}.member-wallet-summary h3{grid-column:auto}.member-actions-grid button{flex:1 1 130px}}
